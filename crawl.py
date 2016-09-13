@@ -37,7 +37,7 @@ try:
         except:
             print("Exception on response from server!")
             continue
-        if extension in ['.pdf','.tar.gz','.c','.scala','.jar','.hs','.py','.pl','.txt','.java','.m','.gz','.md','.gir']:
+        if extension in ['.png','.jpg','.pdf','.tar.gz','.c','.scala','.jar','.hs','.py','.pl','.txt','.java','.m','.gz','.md','.gir','zip','.ogg']:
 
             current = urllib2.urlopen(tag['href'])
             print "\n[*] Downloading: %s" %(os.path.basename(tag['href']))
