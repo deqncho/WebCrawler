@@ -27,7 +27,7 @@ try:
             print(tag['href'])
             extension = os.path.splitext(os.path.basename(tag['href']))[1]
         except:
-            "Exception on parsing data"
+            "Exception on parsing data!"
             continue
         print(extension)
         try:
