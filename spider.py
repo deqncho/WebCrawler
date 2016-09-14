@@ -4,8 +4,19 @@ from bs4 import BeautifulSoup
 from pprint import pprint
 import os
 import sys
+import re
+
+# Useless here...
+url_validation_regex = regex = re.compile(
+        r'^(?:http|ftp)s?://' # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+        r'localhost|' #localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+        r'(?::\d+)?' # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
 url = raw_input("[+] Enter the url: ")
+url = re.sub(r'#\S*',"", url)
 course_name = raw_input("[+] Enter the course name: ")
 complete_path = "/home/deyan/Desktop/KNOWLEDGEBASE/" + course_name
 if not os.path.exists(complete_path):
@@ -49,9 +60,18 @@ while len(urls) > 0:
 
     for tag in soup.findAll('a', href = True):
         print "=========================="
+        if tag['href'].startswith("www."):
+            not_qualified.append(tag['href'])
+            number_not_qualified += 1
+            print "Tag not qualified!"
+            continue
+
         tag['href'] = urlparse.urljoin(current_url, tag['href'])
+        tag['href'] = re.sub(r'#\S*', "", tag['href'])
         print("Current page %s" %current_url)
         print "Tag %s" %tag['href']
+        if tag['href'] in visited or tag['href'] in not_qualified or tag['href'] in invalid_pages:
+            continue
         try:
             connection_tag = urllib.urlopen(tag['href'])
             code_tag = connection_tag.getcode()
