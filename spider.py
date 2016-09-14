@@ -6,6 +6,7 @@ import os
 import sys
 import re
 
+
 # Useless here...
 url_validation_regex = regex = re.compile(
         r'^(?:http|ftp)s?://' # http:// or https://
