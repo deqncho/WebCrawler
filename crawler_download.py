@@ -24,8 +24,8 @@ url_validation_regex = regex = re.compile(
         r'(?::\d+)?' # optional port
         r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
-# url = raw_input("[+] Enter the url: ")
-# url = re.sub(r'#\S*',"", url)
+url = raw_input("[+] Enter the url: ")
+url = re.sub(r'#\S*',"", url)
 # course_name = raw_input("[+] Enter the course name: ")
 # complete_path = "/home/deyan/Desktop/KNOWLEDGEBASE/" + course_name
 # if not os.path.exists(complete_path):
