@@ -7,13 +7,12 @@ import sys
 import re
 import time
 
+
 def check_if_first(elem,list_of_tuples):
     for x,y in list_of_tuples:
         if elem == x:
             return True
     return False
-
-start_time = time.time()
 
 # Useless here...
 url_validation_regex = regex = re.compile(
@@ -25,6 +24,7 @@ url_validation_regex = regex = re.compile(
         r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
 url = raw_input("[+] Enter the url: ")
+start_time = time.time()
 url = re.sub(r'#\S*',"", url)
 # course_name = raw_input("[+] Enter the course name: ")
 # complete_path = "/home/deyan/Desktop/KNOWLEDGEBASE/" + course_name
@@ -84,6 +84,7 @@ while len(urls) > 0:
         if current_url not in visited:
             visited.append(current_url)
             number_qualified += 1
+
         else:
             continue
 
@@ -146,6 +147,6 @@ minutes_elapsed = int(seconds_elapsed / 60)
 formatted_minutes = minutes_elapsed % 60
 hours_elapsed = int(minutes_elapsed / 60)
 print len(visited)
-print "Time elapsed: {0} hours: {1} minutes: {2} seconds".format(hours_elapsed, formatted_minutes, formatted_seconds)
+print "Time elapsed after input: {0} hours: {1} minutes: {2} seconds".format(hours_elapsed, formatted_minutes, formatted_seconds)
 
 
