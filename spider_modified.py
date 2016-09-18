@@ -20,12 +20,12 @@ url_validation_regex = regex = re.compile(
 
 url = raw_input("[+] Enter the url: ")
 url = re.sub(r'#\S*',"", url)
-# course_name = raw_input("[+] Enter the course name: ")
-# complete_path = "/home/deyan/Desktop/KNOWLEDGEBASE/" + course_name
-# if not os.path.exists(complete_path):
-#     os.makedirs(complete_path)
-# #print(complete_path)
-# print ""
+course_name = raw_input("[+] Enter the course name: ")
+complete_path = "/home/deyan/Desktop/KNOWLEDGEBASE/" + course_name
+if not os.path.exists(complete_path):
+    os.makedirs(complete_path)
+#print(complete_path)
+print ""
 
 urls = [url]
 visited = [url]
@@ -34,6 +34,7 @@ number_not_qualified = 0
 number_qualified = 1
 number_invalid = 0
 invalid_pages = []
+iteration = 1
 
 try:
     connection_initial_url = urllib.urlopen(url)
@@ -51,11 +52,36 @@ except:
 
 while len(urls) > 0:
 
-    connection =  urllib.urlopen(urls[0])
-    htmltext = connection.read()
-    soup = BeautifulSoup(htmltext, "html.parser")
+    try:
+        connection =  urllib.urlopen(urls[0])
+        code_page = connection.getcode()
+        if code_page >= 400:
+            invalid_pages.append(urls[0])
+            number_invalid += 1
+            print "Tag invalid!"
+            urls.pop(0)
+            iteration += 1
+            continue
+        htmltext = connection.read()
+        soup = BeautifulSoup(htmltext, "html.parser")
+    except:
+        print("Tag invalid!")
+        invalid_pages.append(urls[0])
+        number_invalid += 1
+        urls.pop(0)
+        iteration += 1
+        continue
+
     current_url = urls.pop(0)
     extension = os.path.splitext(os.path.basename(current_url))[1]
+    if iteration > 1:
+        if current_url not in visited:
+            visited.append(current_url)
+            number_qualified += 1
+        else:
+            continue
+
+
     print "On page %s right now" %(current_url)
     print "Extension: %s" %(extension)
     print "Getting links from the page..."
@@ -75,27 +101,13 @@ while len(urls) > 0:
         print("Current page %s" %current_url)
         print "Tag %s" %tag['href']
         if tag['href'] in visited or tag['href'] in not_qualified or tag['href'] in invalid_pages:
-            continue
-        try:
-            connection_tag = urllib.urlopen(tag['href'])
-            code_tag = connection_tag.getcode()
-            if code_tag >= 400:
-                invalid_pages.append(tag['href'])
-                number_invalid += 1
-                print "Tag invalid!"
-                continue
-
-        except:
-            invalid_pages.append(tag['href'])
-            number_invalid += 1
-            print "Tag invalid!"
+            print "Tag already assessed!"
             continue
 
         if url in tag['href'] and tag['href'] not in visited:
-            number_qualified += 1
-            print "Tag qualified!"
             urls.append(tag['href'])
-            visited.append(tag['href'])
+            print "Tag qualified!"
+
         else:
             not_qualified.append(tag['href'])
             number_not_qualified += 1
@@ -105,6 +117,8 @@ while len(urls) > 0:
     print"All links from page retrieved."
     print ""
     print "=========================="
+
+    iteration += 1
 
 print ""
 print "Number of qualified pages: %d" %number_qualified
@@ -125,5 +139,5 @@ formatted_seconds = seconds_elapsed % 60
 minutes_elapsed = int(seconds_elapsed / 60)
 formatted_minutes = minutes_elapsed % 60
 hours_elapsed = int(minutes_elapsed / 60)
-print "Time elapsed: {0} hours: {1} minutes: {2} seconds".format(hours_elapsed, formatted_minutes, formatted_seconds)
 print len(visited)
+print "Time elapsed: {0} hours: {1} minutes: {2} seconds".format(hours_elapsed, formatted_minutes, formatted_seconds)

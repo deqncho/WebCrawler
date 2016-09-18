@@ -1,5 +1,5 @@
 import urlparse
-import urllib
+import urllib2
 from bs4 import BeautifulSoup
 from pprint import pprint
 import os
@@ -9,14 +9,14 @@ import time
 
 start_time = time.time()
 
-# Useless here...
-url_validation_regex = regex = re.compile(
-        r'^(?:http|ftp)s?://' # http:// or https://
-        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
-        r'localhost|' #localhost...
-        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
-        r'(?::\d+)?' # optional port
-        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+# Not used in the program so far...
+# url_validation_regex = regex = re.compile(
+#         r'^(?:http|ftp)s?://' # http:// or https://
+#         r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+#         r'localhost|' #localhost...
+#         r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+#         r'(?::\d+)?' # optional port
+#         r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
 url = raw_input("[+] Enter the url: ")
 url = re.sub(r'#\S*',"", url)
@@ -31,12 +31,12 @@ urls = [url]
 visited = [url]
 not_qualified = []
 number_not_qualified = 0
-number_qualified = 1
+number_qualified = 0
 number_invalid = 0
 invalid_pages = []
 
 try:
-    connection_initial_url = urllib.urlopen(url)
+    connection_initial_url = urllib2.urlopen(url, timeout=10)
     code_initial_url = connection_initial_url.getcode()
     if code_initial_url >= 400:
         print "Invalid initial URL!"
@@ -51,7 +51,7 @@ except:
 
 while len(urls) > 0:
 
-    connection =  urllib.urlopen(urls[0])
+    connection =  urllib2.urlopen(urls[0], timeout=10)
     htmltext = connection.read()
     soup = BeautifulSoup(htmltext, "html.parser")
     current_url = urls.pop(0)
@@ -77,7 +77,7 @@ while len(urls) > 0:
         if tag['href'] in visited or tag['href'] in not_qualified or tag['href'] in invalid_pages:
             continue
         try:
-            connection_tag = urllib.urlopen(tag['href'])
+            connection_tag = urllib2.urlopen(tag['href'], timeout=10)
             code_tag = connection_tag.getcode()
             if code_tag >= 400:
                 invalid_pages.append(tag['href'])
@@ -126,4 +126,3 @@ minutes_elapsed = int(seconds_elapsed / 60)
 formatted_minutes = minutes_elapsed % 60
 hours_elapsed = int(minutes_elapsed / 60)
 print "Time elapsed: {0} hours: {1} minutes: {2} seconds".format(hours_elapsed, formatted_minutes, formatted_seconds)
-print len(visited)
