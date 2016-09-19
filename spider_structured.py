@@ -8,6 +8,8 @@ import re
 import time
 import pdfkit
 
+"""TODO - fix the structure of the file system outputed"""
+
 def check_if_first(elem,list_of_tuples):
     for x,y in list_of_tuples:
         if elem == x:
