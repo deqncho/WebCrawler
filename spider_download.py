@@ -8,7 +8,6 @@ import re
 import time
 import pdfkit
 
-
 def check_if_first(elem,list_of_tuples):
     for x,y in list_of_tuples:
         if elem == x:
@@ -52,19 +51,20 @@ try:
         sys.exit(0)
 
     basename = os.path.basename(url)
-    extension_initial_url = os.path.splitext(basename)[1]
-    if extension_initial_url in ['.png','.jpg','.pdf','.tar.gz','.c','.scala','.jar','.hs','.py','.pl','.txt','.java','.m','.gz','.md','.gir','zip','.ogg']:
+    extension_initial = os.path.splitext(basename)[1]
+    if extension_initial in ['.png', '.jpg', '.pdf', '.tar.gz', '.c', '.scala', '.jar', '.hs', '.py', '.pl', '.txt', '.java', '.m', '.gz', '.md', '.gir', 'zip', '.ogg']:
         print "\n[*] Downloading: %s" % (os.path.basename(url))
         path = complete_path + "/" + os.path.basename(url)
         print(path)
         with open(path, 'wb') as f:
             f.write(connection_initial_url.read())
-    elif extension_initial_url in ['','.html']:
-        pdfkit.from_url(url,complete_path + "/" + urls[0][1])
+    # elif extension_initial in ['', '.html']:
+    #     pdfkit.from_url(url,complete_path + "/" + urls[0][1])
 
 
 
-except:
+except Exception as e:
+    print e
     print "Invalid initial URL!"
     print "Exiting..."
     sys.exit(0)
@@ -93,9 +93,21 @@ while len(urls) > 0:
         continue
 
     current_url = urls.pop(0)
-    extension = os.path.splitext(os.path.basename(current_url[0]))[1]
+    basename_current = os.path.basename(current_url[0])
+    print basename_current
+    extension_current = os.path.splitext(basename_current)[1]
+
     if iteration > 1:
         if current_url not in visited:
+            if extension_current in ['.png', '.jpg', '.pdf', '.tar.gz', '.c', '.scala', '.jar', '.hs', '.py', '.pl',
+                                     '.txt',
+                                     '.java', '.m', '.gz', '.md', '.gir', 'zip', '.ogg']:
+                print "\n[*] Downloading: %s" % (current_url[1])
+                path_current = complete_path + "/" + os.path.basename(current_url[0])
+                print(path_current)
+                with open(path_current, 'wb') as f:
+                    f.write(htmltext)
+
             visited.append(current_url)
             number_qualified += 1
 
@@ -103,9 +115,14 @@ while len(urls) > 0:
             continue
 
 
+    # elif extension_current in ['', '.html']:
+    #     print(current_url)
+    #     bla = complete_path + "/" + current_url[1]
+    #     pdfkit.from_url(current_url[0], complete_path + "/" + current_url[1])
+
 
     print "On page %s right now" %(current_url[0])
-    print "Extension: %s" %(extension)
+    print "Extension: %s" %(extension_current)
     print "Getting links from the page..."
 
     for tag in soup.findAll('a', href = True):

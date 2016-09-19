@@ -18,8 +18,8 @@ print(complete_path)
 
 try:
     i = 0
-    request = urllib2.Request(url, None)
-    html = urllib2.urlopen(request)
+
+    html = urllib2.urlopen(url)
     soup = BeautifulSoup(html.read()) # to parse the website
     for tag in soup.findAll('a', href = True):
         try:
