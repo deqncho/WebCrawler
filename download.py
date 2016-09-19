@@ -2,7 +2,7 @@ import pdfkit
 import time
 
 start_time = time.time()
-pdfkit.from_url('http://www.inf.ed.ac.uk/teaching/courses/epl/index-2015.html', '/home/deyan/Desktop/KNOWLEDGEBASE/dfsafaw/here2')
+pdfkit.from_url('http://www.inf.ed.ac.uk/teaching/courses/epl/index-2015.html', '/home/deyan/Desktop/KNOWLEDGEBASE/ bla bla')
 
 seconds_elapsed = int(time.time() - start_time)
 formatted_seconds = seconds_elapsed % 60
