@@ -87,6 +87,10 @@ def main():
     number_invalid = 0
     invalid_pages = []
     iteration = 1
+    links_for_page = []
+    links_added = False
+    starting_link = ''
+    starting_links = []
 
     connection_initial_url, resource = check_connection(url)
 
@@ -113,7 +117,7 @@ def main():
             urls.pop(0)
             iteration += 1
             continue
-
+        #1
         current_url = urls.pop(0)
         basename_current = os.path.basename(current_url[0])
         print basename_current
@@ -121,6 +125,17 @@ def main():
 
         if iteration > 1:
             if current_url not in visited:
+
+                if len(links_for_page) == 0:
+                    starting_link = current_url[0]
+                    links_added = False
+                else:
+                    links_for_page.pop(0)
+
+                print '****************'
+                print starting_link
+                print links_for_page
+                print '****************'
                 if extension_current not in ['', '.html']:
                     print "\n[*] Downloading: %s" % (current_url[1])
                     path_current = path_to_course + "/" + os.path.basename(current_url[0])
@@ -171,6 +186,8 @@ def main():
                 continue
 
             if url in tag['href'] and not check_if_first(tag['href'], visited):
+                if not links_added:
+                    links_for_page.append(tag['href'])
                 urls.append((tag['href'], tag.text))
                 print "Tag qualified!"
 
@@ -183,8 +200,9 @@ def main():
         print"All links from page retrieved."
         print ""
         print "=========================="
-
+        links_added = True
         iteration += 1
+        starting_links.append((starting_link,links_for_page))
 
     print ""
     print "Number of qualified pages: %d" % number_qualified
@@ -206,6 +224,7 @@ def main():
     formatted_minutes = minutes_elapsed % 60
     hours_elapsed = int(minutes_elapsed / 60)
     print len(visited)
+    print "Pages and their links: {}".format(starting_links)
     print "Time elapsed after input: {0} hours: {1} minutes: {2} seconds".format(hours_elapsed, formatted_minutes,
                                                                                  formatted_seconds)
 
