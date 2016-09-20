@@ -99,6 +99,7 @@ while len(urls) > 0:
         iteration += 1
         continue
 
+
     current_url = urls.pop(0)
     basename_current = os.path.basename(current_url[0])
     print basename_current
