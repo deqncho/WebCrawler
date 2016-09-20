@@ -113,7 +113,7 @@ while len(urls) > 0:
                     f.write(htmltext)
             else:
                 print "\n[*] Downloading: .html"
-                path_current = complete_path + "/" + current_url[1]
+                path_current = complete_path + "/" + os.path.basename(current_url[0])
                 print(path_current)
                 with open(path_current, 'wb') as f:
                     f.write(htmltext)

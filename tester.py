@@ -8,8 +8,6 @@ import re
 import time
 import pdfkit
 
-"""TODO - fix the structure of the file system outputed"""
-
 def check_if_first(elem,list_of_tuples):
     for x,y in list_of_tuples:
         if elem == x:
@@ -29,27 +27,24 @@ url = raw_input("[+] Enter the url: ")
 start_time = time.time()
 url = re.sub(r'#\S*',"", url)
 course_name = raw_input("[+] Enter the course name: ")
-current_dir = "/home/deyan/Desktop/KNOWLEDGEBASE/" + course_name
-if not os.path.exists(current_dir):
-    os.makedirs(current_dir)
+complete_path = "/home/deyan/Desktop/KNOWLEDGEBASE/" + course_name
+if not os.path.exists(complete_path):
+    os.makedirs(complete_path)
 #print(complete_path)
 print ""
 
-urls = [(url, "Main_Page_Course")]
-visited = [(url, "Main_Page_Course")]
+urls = [(url, "Main_Page_Course.pdf")]
+visited = [(url, "Main_Page_Course.pdf")]
 not_qualified = []
 number_not_qualified = 0
 number_qualified = 1
 number_invalid = 0
 invalid_pages = []
 iteration = 1
-links_for_page = []
-links_added = False
 
 try:
     connection_initial_url = urllib2.urlopen(url)
     code_initial_url = connection_initial_url.getcode()
-    html_initial = connection_initial_url.read()
     if code_initial_url >= 400:
         print "Invalid initial URL!"
         print "Exiting..."
@@ -59,28 +54,21 @@ try:
     extension_initial = os.path.splitext(basename)[1]
     if extension_initial not in ['','.html']:
         print "\n[*] Downloading: %s" % (os.path.basename(url))
-        path = current_dir + "/" + os.path.basename(url)
+        path = complete_path + "/" + os.path.basename(url)
         print(path)
         with open(path, 'wb') as f:
-            f.write(html_initial)
+            f.write(connection_initial_url.read())
     else:
-        if not links_added:
-            os.makedirs(os.path.normpath(os.path.join(current_dir, urls[0][1])))
-        else:
-            print "\n[*] Downloading: .html"
+        print "\n[*] Downloading: %s" % (os.path.basename(url))
+        path = complete_path + "/" + urls[0][1].replace('/','-')
+        print(path)
+        with open(path, 'wb') as f:
+            f.write(connection_initial_url.read())
 
-            current_dir = os.path.normpath(os.path.join(current_dir, urls[0][1]))
-            # os.makedirs(current_dir)
-            print(current_dir)
-            path = current_dir + "/" + urls[0][1]
-            print(path)
-            with open(path, 'wb') as f:
-                f.write(html_initial)
-        # print "\n[*] Downloading: .html"
-        # path = current_dir + "/" + urls[0][1]
-        # print(path)
-        # with open(path, 'wb') as f:
-        #     f.write(html_initial)
+    # elif extension_initial in ['', '.html']:
+    #     pdfkit.from_url(url,complete_path + "/" + urls[0][1])
+
+
 
 except Exception as e:
     print e
@@ -118,42 +106,24 @@ while len(urls) > 0:
 
     if iteration > 1:
         if current_url not in visited:
-
-            if len(links_for_page) == 0:
-                links_added = False
-            elif links_added:
-                links_for_page.pop(0)
-                if len(links_for_page) == 0:
-                    links_added = False
-
             if extension_current not in ['','.html']:
-
                 print "\n[*] Downloading: %s" % (current_url[1])
-                path_current = current_dir + "/" + os.path.basename(current_url[0])
+                path_current = complete_path + "/" + os.path.basename(current_url[0])
                 print(path_current)
                 with open(path_current, 'wb') as f:
                     f.write(htmltext)
             else:
-                if not links_added:
-                    os.makedirs(os.path.normpath(os.path.join(current_dir,current_url[1])))
-                else:
-                    print "\n[*] Downloading: .html"
-
-                    current_dir = os.path.normpath(os.path.join(current_dir,current_url[1]))
-                    #os.makedirs(current_dir)
-                    file_to_create = current_dir + "/" + "Sub_Page"
-                    print(file_to_create)
-                    with open(file_to_create, 'wb') as f:
-                        f.write(htmltext)
-            print '**************'
-            print links_for_page
-            print '**************'
+                print "\n[*] Downloading: %s" % (current_url[1])
+                path_current = complete_path + "/" + current_url[1].replace('/','-')
+                print(path_current)
+                with open(path_current, 'wb') as f:
+                    f.write(htmltext)
 
             visited.append(current_url)
             number_qualified += 1
 
-        else:
 
+        else:
             continue
 
 
@@ -187,8 +157,6 @@ while len(urls) > 0:
 
         if url in tag['href'] and not check_if_first(tag['href'],visited):
             urls.append((tag['href'],tag.text))
-            if not links_added:
-                links_for_page.append(tag['href'])
             print "Tag qualified!"
 
         else:
@@ -200,8 +168,7 @@ while len(urls) > 0:
     print"All links from page retrieved."
     print ""
     print "=========================="
-    if not links_added:
-        links_added = True
+
     iteration += 1
 
 print ""
@@ -225,5 +192,3 @@ formatted_minutes = minutes_elapsed % 60
 hours_elapsed = int(minutes_elapsed / 60)
 print len(visited)
 print "Time elapsed after input: {0} hours: {1} minutes: {2} seconds".format(hours_elapsed, formatted_minutes, formatted_seconds)
-
-
